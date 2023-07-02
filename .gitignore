@@ -1,10 +1,4 @@
 /dev_*/
 .DS_Store
 
-.env
-private.env
-
-*.json
-
-
 .venv
