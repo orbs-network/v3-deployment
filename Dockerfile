@@ -1,6 +1,6 @@
 # This creates a temp image to test the installer script
 
-FROM ubuntu:22.04
+FROM ubuntu:22.10
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
