@@ -20,6 +20,8 @@ NC='\033[0m' # No Color
 #     exit 1
 # fi
 
+export DEBIAN_FRONTEND=noninteractive
+
 # ----- CHECK MINIMUM MACHINE SPECS -----
 echo -e "${BLUE}Checking machine meets minimum hardware requirements...${NC}"
 # Min specs
@@ -53,12 +55,37 @@ fi
 echo -e "${GREEN}System meets minimum requirements!${NC}"
 echo "------------------------------------"
 
-#  ----- INSTALL DEPEDENCIES ----- 
+mkdir -p /opt/orbs
+
+#  ----- INSTALL DEPENDENCIES -----
 echo -e "${BLUE}Installing dependencies...${NC}"
 # TODO: I suspect it is dangerous to run upgrade each time installer script is run
 apt-get update -qq && apt-get -y upgrade -qq 
 echo -e "${YELLOW}This may take a few minutes. Please wait...${NC}"
 apt-get install -qq -y software-properties-common podman docker-compose git cron > /dev/null
+
+# Check if Python is installed
+
+which python3 &> /dev/null
+
+if [ $? -ne 0 ]; then
+    echo "${YELLOW}Python is not installed. Installing now...${NC}"
+    apt-get install -y software-properties-common python3 python3-pip
+else
+    echo -e "${GREEN}Python is already installed${NC}"
+fi
+
+which pip3 &> /dev/null
+
+if [ $? -ne 0 ]; then
+    echo "${YELLOW}pip is not installed. Installing now...${NC}"
+    apt-get install -y python3-pip
+else
+    echo -e "${GREEN}pip is already installed${NC}"
+fi
+
+pip install -r requirements.txt
+
 systemctl enable cron
 
 # Need to explicitly add docker.io registry
@@ -94,3 +121,13 @@ echo -e "${GREEN}Orchestrator running!${NC}"
 echo "------------------------------------"
 
 echo -e "${GREEN}Installation complete!${NC}"
+
+echo -e "${BLUE}Generating a new Ethereum wallet... ${NC}"
+chmod +x /home/generate_new_wallet.py
+/home/generate_new_wallet.py /opt/orbs
+
+if [ $? -eq 0 ]; then
+  echo -e "${GREEN}Keys were successfully generated and stored under /opt/orbs/keys.json!${NC}"
+else
+  echo "${RED}generate_new_wallet script failed ${NC}"
+fi
