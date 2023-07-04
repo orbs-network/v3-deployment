@@ -70,8 +70,7 @@ which python3 &> /dev/null
 
 if [ $? -ne 0 ]; then
     echo "${YELLOW}Python is not installed. Installing now...${NC}"
-    add-apt-repository ppa:deadsnakes/ppa
-    apt-get install -y python3.11 python3-pip
+    apt-get install -y software-properties-common python3 python3-pip
 else
     echo -e "${GREEN}Python is already installed${NC}"
 fi
